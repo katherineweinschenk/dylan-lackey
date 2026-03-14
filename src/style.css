@@ -511,6 +511,7 @@ body, html {
     padding: 0 24px 0 24px;
     bottom: 64px;
     height: auto;
+    top: 64px;
   }
 
   .bottom-right {
@@ -521,4 +522,10 @@ body, html {
   .publications-grid {
     grid-template-columns: 1fr;
   }
+
+  #page-publications,
+  #page-syllabi {
+    padding-top: 0;
+  }
+
 }
