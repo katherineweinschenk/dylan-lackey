@@ -11,8 +11,8 @@ export const publications = [
     id: '002',
     year: '2025',
     title: 'Trauma Theory: An Introduction to Historical Memory, Psychoanalysis, and Sublimation',
-    type: 'Paper',
-    journal: '',
+    type: 'Chapter',
+    journal: 'Contemporary Literary and Cultural Theory: Concepts and Applications',
     url: 'https://www.academia.edu/144481521/Trauma_Theory_An_Introduction_to_Historical_Memory_Psychoanalysis_and_Sublimation',
   },
   {
@@ -20,15 +20,15 @@ export const publications = [
     year: '2025',
     title: "Joyce's Masochistic <i>Lalangue</i> : Deleuze and Lacan at <i>Finnegans Wake</i>",
     type: 'Paper',
-    journal: '',
+    journal: 'Culture and Dialogue',
     url: 'https://www.academia.edu/144413456/Joyces_Masochistic_Lalangue_Deleuze_and_Lacan_at_Finnegans_Wake',
   },
   {
     id: '004',
     year: '2025',
-    title: "Lacan's Sinthome: Exhibition Review (Centre Pompidou-Metz)",
+    title: "Lacan's Sinthome: Review of 'Lacan, L'Exposition: Quand l'art rencontre la psychanalyse' at Centre Pompidou-Metz",
     type: 'Exhibition Review',
-    journal: '',
+    journal: 'Exhibition Reviews Annual',
     url: 'https://www.academia.edu/129992420/Lacans_Sinthome_Lacan_L_Exposition_Quand_l_art_rencontre_la_psychanalyse_at_Centre_Pompidou_Metz_Author_Copy_',
   },
   {
@@ -36,7 +36,7 @@ export const publications = [
     year: '2024',
     title: 'For the Love of Guilt: Interpellation and Black Lalangue',
     type: 'Paper',
-    journal: '',
+    journal: 'TOPIA: Canadian Journal of Cultural Studies',
     url: 'https://www.academia.edu/129100598/For_the_Love_of_Guilt_Interpellation_and_Black_Lalangue_Author_Copy_',
   },
   {
@@ -44,7 +44,7 @@ export const publications = [
     year: '2023',
     title: 'Guilty Machines: On <i>Ab-sens</i> in the Age of AI',
     type: 'Paper',
-    journal: '',
+    journal: 'Critical Humanities',
     url: 'https://www.academia.edu/112514546/Guilty_Machines_On_Ab_sens_in_the_Age_of_AI',
   },
   {
@@ -52,7 +52,7 @@ export const publications = [
     year: '2023',
     title: 'Against Declination: Anti-Blackness, Subjectivation, and Parabasis',
     type: 'Paper',
-    journal: '',
+    journal: 'Chiasma: A Site for Thought',
     url: 'https://www.academia.edu/106119062/Against_Declination_Anti_Blackness_Subjectivation_and_Parabasis',
   },
   {
