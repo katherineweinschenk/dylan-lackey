@@ -290,8 +290,7 @@ body, html {
 }
 
 .cv-link:hover {
-  background: var(--fg);
-  color: var(--bg);
+  background: rgba(10, 10, 10, 0.04);
 }
 
 .cv-arrow {
@@ -504,7 +503,7 @@ body, html {
     left: auto;
     max-width: 100%;
     margin-top: 50vh;
-    padding: 24px 44px 80px;
+    padding: 24px 50px 30px;
     background: var(--bg);
   }
 
@@ -516,6 +515,10 @@ body, html {
 
   .bottom-right {
     gap: 20px;
-    padding-right: 0;
+    padding-right: 5px;
+  }
+
+  .publications-grid {
+    grid-template-columns: 1fr;
   }
 }
