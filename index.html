@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dylan Lackey</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+
+  <div class="component-container">
+
+    <!-- Three.js canvas -->
+    <div id="webgl-container"></div>
+
+    <!-- Persistent UI frame layer -->
+    <div class="ui-layer">
+      <div class="frame-v-right"></div>
+      <div class="frame-h-bottom"></div>
+
+      <div class="top-left">
+        <span class="badge"></span>
+        <span class="label">Dylan Lackey // PhD Candidate</span>
+      </div>
+
+      <!-- Navigation (replaces data blocks) -->
+      <div class="bottom-right">
+        <div class="nav-item" data-page="home">
+          <span class="label nav-section">00</span>
+          <span class="label nav-name">Home</span>
+        </div>
+        <div class="nav-item" data-page="publications">
+          <span class="label nav-section">01</span>
+          <span class="label nav-name">Publications</span>
+        </div>
+        <div class="nav-item" data-page="syllabi">
+          <span class="label nav-section">02</span>
+          <span class="label nav-name">Syllabi</span>
+        </div>
+      </div>
+
+      <div class="crosshair"></div>
+
+      <!-- Home page about block -->
+      <div class="title-block" id="title-block">
+        <h1>About Me</h1>
+        <p>/</p>
+      </div>
+    </div>
+
+    <!-- Home page content overlay -->
+    <div class="page-overlay" id="page-home">
+      <div class="home-content">
+        <div class="bio-block">
+          <p class="bio-text">
+            Dylan Lackey is a PhD candidate in English and Media Studies at Virginia Commonwealth University, specializing in psychoanalytic theory, Black studies, and critical theory. His dissertation examines the intersection of Lacanian psychoanalysis and Black radical thought. He expects to graduate in May 2025.
+          </p>
+          <a class="cv-link" href="/cv/dylan-lackey-cv.pdf" download>
+            <span class="label">Download CV</span>
+            <span class="cv-arrow">↓</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Publications page content overlay -->
+    <div class="page-overlay hidden" id="page-publications">
+      <div class="publications-header">
+        <div class="pub-header-left">
+          <span class="label">Archive</span>
+        </div>
+        <div class="pub-header-right">
+          <span class="label">Dylan Lackey — Selected Writings</span>
+        </div>
+      </div>
+      <div class="publications-grid" id="publications-grid">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+
+    <!-- Syllabi page content overlay -->
+    <div class="page-overlay hidden" id="page-syllabi">
+      <div class="syllabi-header">
+        <div class="syl-header-left">
+          <span class="label">Course Archive</span>
+        </div>
+        <div class="syl-header-right">
+          <span class="label">Dylan Lackey — Teaching</span>
+        </div>
+      </div>
+      <div class="syllabi-list" id="syllabi-list">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
