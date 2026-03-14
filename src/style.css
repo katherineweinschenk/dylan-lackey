@@ -253,12 +253,18 @@ body, html {
 #page-home {
   pointer-events: none;
   background: transparent;
+  left: 64px;
+  right: 64px;
+  top: 64px;
+  bottom: 64px;
+  width: auto;
+  height: auto;
 }
 
 .bio-block {
   position: absolute;
-  bottom: 80px;
-  left: 80px;
+  bottom: 16px;
+  left: 16px;
   max-width: 360px;
   pointer-events: auto;
 }
@@ -501,6 +507,12 @@ body, html {
   #page-home {
     pointer-events: auto;
     overflow-y: auto;
+    left: 64px;
+    right: 64px;
+    top: 64px;
+    bottom: 64px;
+    width: auto;
+    height: auto;
   }
 
   .home-content {
@@ -515,12 +527,12 @@ body, html {
     left: auto;
     max-width: 100%;
     margin-top: 50vh;
-    padding: 24px 50px 30px;
+    padding: 24px 12px 30px;
     background: var(--bg);
   }
 
   .page-overlay {
-    padding: 0 24px 0 24px;
+    padding: 0px;
     bottom: 64px;
     height: auto;
     top: 64px;
