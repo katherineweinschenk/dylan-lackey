@@ -82,7 +82,7 @@ document.querySelectorAll('.nav-item').forEach((el) => {
 function navigateTo(page) {
   pages.forEach((p) => {
     const isActive = p === page;
-    overlays[p].classList.toggle('hidden', !isActive || p === 'home');
+    overlays[p].classList.toggle('hidden', !isActive);
     navItems[p]?.classList.toggle('active', isActive);
   });
 

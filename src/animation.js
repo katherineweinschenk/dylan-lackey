@@ -12,7 +12,7 @@ export function initAnimation(container) {
     0.1,
     100
   );
-  camera.position.set(0, 0, 14);
+  camera.position.set(0, 0, 9);
 
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
   renderer.setSize(window.innerWidth, window.innerHeight);
@@ -66,45 +66,116 @@ export function initAnimation(container) {
     });
   }
 
-  // ─── Borromean Rings ────────────────────────────────────
+  // ─── Wavy Ribbon Ring Geometry ──────────────────────────
   //
-  // Three tori in three mutually perpendicular planes, all
-  // centred at the origin.  Viewed from most angles the rings
-  // appear to pass through each other, giving the Borromean-
-  // interlocked visual.  Each ring rotates on its own axis at
-  // a slightly different speed; the whole group turns slowly.
+  // Each ring follows a wavy, non-circular path (like a hand-
+  // drawn circle) and has a flat ribbon cross-section created
+  // by scaling the tube geometry along its local normal axis.
   //
-  const R = 2.0;   // major (ring) radius
-  const r = 0.19;  // tube radius
-  const TUBE_SEGS = 280;
-  const RING_SEGS = 36;
 
-  const geom = new THREE.TorusGeometry(R, r, RING_SEGS, TUBE_SEGS);
+  class WavyRingCurve extends THREE.Curve {
+    constructor(radius, wobbles, phase) {
+      super();
+      this.radius = radius;
+      this.wobbles = wobbles; // array of {amp, freq, phaseOffset}
+      this.phase = phase;
+    }
 
-  // Slightly different tints keep the rings visually distinct.
-  const matA = makeMaterial(0xffffff);  // pure chrome
-  const matB = makeMaterial(0xf5f0eb);  // warm tint
-  const matC = makeMaterial(0xebf0f5);  // cool tint
+    getPoint(t, optionalTarget = new THREE.Vector3()) {
+      const angle = t * Math.PI * 2;
+      let r = this.radius;
+      let z = 0;
+      for (const w of this.wobbles) {
+        r += w.amp * Math.sin(w.freq * angle + this.phase + (w.phaseOffset || 0));
+        z += (w.zAmp || 0) * Math.sin(w.freq * angle + this.phase * 0.7 + (w.phaseOffset || 0));
+      }
+      return optionalTarget.set(
+        r * Math.cos(angle),
+        r * Math.sin(angle),
+        z
+      );
+    }
+  }
 
-  // Ring 0 – in the XY plane (default torus orientation, axis along Z)
-  const ring0 = new THREE.Mesh(geom, matA);
+  const R = 2.0;
 
-  // Ring 1 – in the XZ plane (rotate 90° around X so axis is along Y)
-  const ring1 = new THREE.Mesh(geom, matB);
-  ring1.rotation.x = Math.PI / 2;
+  // Ring definitions: three main rings + one thinner fourth ring
+  const ringDefs = [
+    {
+      // Ring I (top in image)
+      wobbles: [
+        { amp: 0.22, freq: 3, phaseOffset: 0, zAmp: 0.08 },
+        { amp: 0.10, freq: 5, phaseOffset: 1.2, zAmp: 0.05 },
+      ],
+      phase: 0,
+      tubeRadius: 0.19,
+      flattenZ: 0.32,
+      color: 0xffffff,
+      rotation: [0, 0, 0], // XY plane
+    },
+    {
+      // Ring R (bottom-left in image)
+      wobbles: [
+        { amp: 0.18, freq: 4, phaseOffset: 0.5, zAmp: 0.10 },
+        { amp: 0.08, freq: 7, phaseOffset: 2.0, zAmp: 0.04 },
+      ],
+      phase: 2.1,
+      tubeRadius: 0.19,
+      flattenZ: 0.32,
+      color: 0xf5f0eb,
+      rotation: [Math.PI / 2, 0, 0], // XZ plane
+    },
+    {
+      // Ring S (bottom-right in image)
+      wobbles: [
+        { amp: 0.20, freq: 3, phaseOffset: 1.0, zAmp: 0.12 },
+        { amp: 0.12, freq: 6, phaseOffset: 3.5, zAmp: 0.06 },
+      ],
+      phase: 4.2,
+      tubeRadius: 0.19,
+      flattenZ: 0.32,
+      color: 0xebf0f5,
+      rotation: [0, Math.PI / 2, 0], // YZ plane
+    },
+    {
+      // The fourth ring – thinner than the others
+      wobbles: [
+        { amp: 0.15, freq: 5, phaseOffset: 0.8, zAmp: 0.06 },
+        { amp: 0.07, freq: 8, phaseOffset: 2.5, zAmp: 0.03 },
+      ],
+      phase: 1.0,
+      tubeRadius: 0.10,
+      flattenZ: 0.32,
+      color: 0xf0ebe5,
+      rotation: [Math.PI / 4, Math.PI / 4, 0], // diagonal plane
+    },
+  ];
 
-  // Ring 2 – in the YZ plane (rotate 90° around Y so axis is along X)
-  const ring2 = new THREE.Mesh(geom, matC);
-  ring2.rotation.y = Math.PI / 2;
-
+  const rings = [];
   const ringsGroup = new THREE.Group();
-  ringsGroup.add(ring0, ring1, ring2);
+
+  ringDefs.forEach((def) => {
+    const curve = new WavyRingCurve(R, def.wobbles, def.phase);
+    const geom = new THREE.TubeGeometry(curve, 256, def.tubeRadius, 20, true);
+    const mesh = new THREE.Mesh(geom, makeMaterial(def.color));
+
+    // Flatten the tube into a ribbon by squashing the local Z axis
+    mesh.scale.z = def.flattenZ;
+
+    // Wrap in a group so orientation applies after flattening
+    const wrapper = new THREE.Group();
+    wrapper.add(mesh);
+    wrapper.rotation.set(def.rotation[0], def.rotation[1], def.rotation[2]);
+
+    rings.push({ wrapper, mesh });
+    ringsGroup.add(wrapper);
+  });
+
   scene.add(ringsGroup);
 
   // ─── Animation Loop ─────────────────────────────────────
   const clock = new THREE.Clock();
 
-  // Stored so callers can pause/resume opacity etc.
   let animationId;
   let targetOpacity = 1;
   let currentOpacity = 1;
@@ -114,11 +185,10 @@ export function initAnimation(container) {
     const t = clock.getElapsedTime();
 
     // Per-ring spin (each ring rotates in its own plane)
-    ring0.rotation.z = t * 0.18;
-    ring1.rotation.y += 0;   // ring1 already rotated via rotation.x;
-                              // add a secondary spin around Y (its own normal)
-    ring1.rotation.z = t * 0.14;
-    ring2.rotation.x = t * 0.22;
+    rings[0].mesh.rotation.z = t * 0.18;
+    rings[1].mesh.rotation.z = t * 0.14;
+    rings[2].mesh.rotation.z = t * 0.22;
+    rings[3].mesh.rotation.z = t * 0.10;
 
     // Collective slow drift
     ringsGroup.rotation.y  = t * 0.07;

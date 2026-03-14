@@ -263,6 +263,13 @@ body, html {
   pointer-events: auto;
 }
 
+.bio-heading {
+  font-size: 1.25rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  margin-bottom: 12px;
+}
+
 .bio-text {
   font-size: 0.82rem;
   line-height: 1.65;
