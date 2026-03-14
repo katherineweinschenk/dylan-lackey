@@ -331,7 +331,6 @@ body, html {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   border-left: 1px solid var(--fg);
-  border-top: 1px solid var(--fg);
 }
 
 .pub-card {
@@ -412,7 +411,6 @@ body, html {
   flex-direction: column;
   gap: 0;
   border-left: 1px solid var(--fg);
-  border-top: 1px solid var(--fg);
   margin-top: 0;
 }
 
