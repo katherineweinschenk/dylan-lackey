@@ -54,10 +54,12 @@ courses.forEach((course) => {
   const header = item.querySelector('.syllabus-header');
   header.addEventListener('click', () => {
     const isOpen = item.classList.toggle('open');
-    // Force layout recalc for the max-height transition
+    const embed = item.querySelector('.syllabus-embed');
     if (isOpen && course.pdfPath) {
-      const embed = item.querySelector('.syllabus-embed');
+      // Force layout recalc for the max-height transition
       embed.style.maxHeight = embed.scrollHeight + 'px';
+    } else {
+      embed.style.maxHeight = '';
     }
   });
 
