@@ -35,8 +35,8 @@ courses.forEach((course) => {
   const item = document.createElement('div');
   item.className = 'syllabus-item';
 
-  const embedContent = course.pdfPath
-    ? `<iframe src="${course.pdfPath}" title="${course.title} Syllabus"></iframe>`
+  const embedPlaceholder = course.pdfPath
+    ? ''
     : `<div class="syllabus-no-pdf">PDF not yet available</div>`;
 
   item.innerHTML = `
@@ -48,16 +48,24 @@ courses.forEach((course) => {
       </div>
       <span class="syllabus-toggle">+</span>
     </div>
-    <div class="syllabus-embed">${embedContent}</div>
+    <div class="syllabus-embed">${embedPlaceholder}</div>
   `;
 
   const header = item.querySelector('.syllabus-header');
+  let iframeLoaded = false;
   header.addEventListener('click', () => {
     const isOpen = item.classList.toggle('open');
     const embed = item.querySelector('.syllabus-embed');
     if (isOpen && course.pdfPath) {
-      // Force layout recalc for the max-height transition
-      embed.style.maxHeight = embed.scrollHeight + 'px';
+      // Lazy-load iframe on first open
+      if (!iframeLoaded) {
+        embed.innerHTML = `<iframe src="${course.pdfPath}" title="${course.title} Syllabus"></iframe>`;
+        iframeLoaded = true;
+      }
+      // Wait a frame so the iframe is in the DOM before measuring
+      requestAnimationFrame(() => {
+        embed.style.maxHeight = embed.scrollHeight + 'px';
+      });
     } else {
       embed.style.maxHeight = '';
     }
