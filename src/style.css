@@ -302,7 +302,13 @@ body, html {
 #page-publications {
   background: rgba(240, 240, 240, 0.96);
   backdrop-filter: blur(2px);
-  padding-top: 80px;
+  padding: 16px;
+  left: 64px;
+  right: 64px;
+  top: 64px;
+  bottom: 64px;
+  width: auto;
+  height: auto;
 }
 
 .publications-header,
@@ -386,7 +392,13 @@ body, html {
 #page-syllabi {
   background: rgba(240, 240, 240, 0.96);
   backdrop-filter: blur(2px);
-  padding-top: 80px;
+  padding: 16px;
+  left: 64px;
+  right: 64px;
+  top: 64px;
+  bottom: 64px;
+  width: auto;
+  height: auto;
 }
 
 .syllabi-list {
@@ -525,7 +537,13 @@ body, html {
 
   #page-publications,
   #page-syllabi {
-    padding-top: 0;
+    left: 64px;
+    right: 64px;
+    top: 64px;
+    bottom: 64px;
+    width: auto;
+    height: auto;
+    padding: 8px;
   }
 
 }
