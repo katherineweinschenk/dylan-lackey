@@ -394,6 +394,131 @@ body, html {
   text-align: right;
 }
 
+/* ─── Currently Page ─────────────────────────────────── */
+
+#page-currently {
+  background: rgba(240, 240, 240, 0.96);
+  backdrop-filter: blur(2px);
+  padding: 16px;
+  left: 64px;
+  right: 64px;
+  top: 64px;
+  bottom: 64px;
+  width: auto;
+  height: auto;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.currently-info {
+  display: flex;
+  align-items: baseline;
+  gap: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--fg);
+  flex-shrink: 0;
+  min-height: 40px;
+}
+
+.currently-info-title {
+  font-family: var(--font-mono);
+  font-size: 0.63rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--fg);
+}
+
+.currently-info-creator {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.08em;
+  color: var(--fg);
+  opacity: 0.5;
+}
+
+.currently-shelf {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  flex: 1;
+  overflow: hidden;
+  cursor: grab;
+  user-select: none;
+}
+
+.currently-shelf:active {
+  cursor: grabbing;
+}
+
+.shelf-row {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+  border-bottom: 1px solid var(--ui-line);
+}
+
+.shelf-row:last-child {
+  border-bottom: none;
+}
+
+.shelf-card {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 88%;
+  aspect-ratio: 2 / 3;
+  display: flex;
+  flex-direction: row;
+  border: 1px solid var(--fg);
+  background: var(--bg);
+  will-change: transform;
+  transition: box-shadow 0.2s ease;
+}
+
+.shelf-card:hover {
+  z-index: 10;
+}
+
+.shelf-spine {
+  width: 20px;
+  flex-shrink: 0;
+  height: 100%;
+  background: var(--fg);
+}
+
+.shelf-cover {
+  flex: 1;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 8px 6px;
+  gap: 3px;
+}
+
+.cover-title {
+  font-family: var(--font-mono);
+  font-size: 0.52rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--fg);
+}
+
+.cover-creator {
+  font-family: var(--font-mono);
+  font-size: 0.44rem;
+  letter-spacing: 0.05em;
+  opacity: 0.5;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--fg);
+}
+
 /* ─── Syllabi Page ────────────────────────────────────── */
 
 #page-syllabi {
@@ -571,6 +696,43 @@ body, html {
     width: auto;
     height: auto;
     padding: 8px;
+  }
+
+  #page-currently {
+    left: 64px;
+    right: 64px;
+    top: 64px;
+    bottom: 64px;
+    width: auto;
+    height: auto;
+    padding: 8px;
+    overflow-y: auto;
+    display: block;
+  }
+
+  .currently-shelf {
+    height: auto;
+    cursor: default;
+    display: block;
+  }
+
+  .shelf-row {
+    position: relative;
+    height: 120px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    border-bottom: 1px solid var(--ui-line);
+  }
+
+  .shelf-card {
+    position: relative;
+    display: inline-flex;
+    top: auto;
+    transform: none;
+    height: 100px;
+    margin: 10px 4px;
+    vertical-align: top;
   }
 
 }

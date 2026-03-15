@@ -1,6 +1,7 @@
 import { initAnimation } from './animation.js';
 import { publications } from './data/publications.js';
 import { courses } from './data/syllabi.js';
+import { currently } from './data/currently.js';
 
 // ─── Animation ────────────────────────────────────────────
 const anim = initAnimation(document.getElementById('webgl-container'));
@@ -79,8 +80,151 @@ courses.forEach((course) => {
   sylList.appendChild(item);
 });
 
+// ─── Currently Shelf ──────────────────────────────────────
+const infoTitle = document.getElementById('currently-info-title');
+const infoCreator = document.getElementById('currently-info-creator');
+
+const shelfRows = [
+  document.getElementById('shelf-row-0'),
+  document.getElementById('shelf-row-1'),
+  document.getElementById('shelf-row-2'),
+];
+
+const CARD_GAP = 8;
+const PARALLAX = [1.0, 0.85, 0.7];
+const AUTO_SPEED = 0.4;
+
+// Distribute cards round-robin across rows
+const rowItems = [[], [], []];
+currently.forEach((item, i) => rowItems[i % 3].push(item));
+
+// Build card elements and track per-row state
+const rowCardEls = [[], [], []];
+const rowOffsets = [0, 0, 0]; // current scroll offset per row
+const rowVelocity = [0, 0, 0];
+
+rowItems.forEach((items, rowIdx) => {
+  const rowEl = shelfRows[rowIdx];
+  items.forEach((item) => {
+    const card = document.createElement('div');
+    card.className = 'shelf-card';
+
+    const spine = document.createElement('div');
+    spine.className = 'shelf-spine';
+
+    const cover = document.createElement('div');
+    cover.className = 'shelf-cover';
+    cover.innerHTML = `
+      <span class="cover-title">${item.title}</span>
+      ${item.creator ? `<span class="cover-creator">${item.creator}</span>` : ''}
+    `;
+
+    card.appendChild(spine);
+    card.appendChild(cover);
+
+    card.addEventListener('mouseenter', () => {
+      infoTitle.textContent = item.title;
+      infoCreator.textContent = item.creator;
+    });
+    card.addEventListener('mouseleave', () => {
+      infoTitle.textContent = '';
+      infoCreator.textContent = '';
+    });
+
+    rowEl.appendChild(card);
+    rowCardEls[rowIdx].push(card);
+  });
+});
+
+// Position all cards in a row based on offset
+function layoutRow(rowIdx) {
+  const cards = rowCardEls[rowIdx];
+  if (!cards.length) return;
+  const rowEl = shelfRows[rowIdx];
+  const rowH = rowEl.offsetHeight;
+  const cardH = rowH * 0.88;
+  // aspect-ratio 2/3 → width = cardH * 2/3
+  const cardW = cardH * (2 / 3);
+  const stride = cardW + CARD_GAP;
+  const totalW = cards.length * stride;
+  const offset = rowOffsets[rowIdx] % totalW;
+
+  cards.forEach((card, i) => {
+    let x = i * stride - offset;
+    // Wrap: keep cards filling the visible area on both sides
+    if (x < -(cardW + CARD_GAP)) x += totalW;
+    if (x > rowEl.offsetWidth + CARD_GAP) x -= totalW;
+    card.style.left = `${x}px`;
+    card.style.width = `${cardW}px`;
+  });
+}
+
+let shelfRafId = null;
+let shelfActive = false;
+
+function shelfTick() {
+  if (!shelfActive) return;
+  rowOffsets.forEach((_, rowIdx) => {
+    // Auto-scroll + velocity decay
+    rowOffsets[rowIdx] += AUTO_SPEED * PARALLAX[rowIdx] + rowVelocity[rowIdx] * PARALLAX[rowIdx];
+    rowVelocity[rowIdx] *= 0.92;
+    layoutRow(rowIdx);
+  });
+  shelfRafId = requestAnimationFrame(shelfTick);
+}
+
+function startShelf() {
+  if (shelfActive) return;
+  shelfActive = true;
+  shelfTick();
+}
+
+function stopShelf() {
+  shelfActive = false;
+  if (shelfRafId) {
+    cancelAnimationFrame(shelfRafId);
+    shelfRafId = null;
+  }
+}
+
+// Drag interaction
+const shelfEl = document.getElementById('currently-shelf');
+let isDragging = false;
+let dragStartX = 0;
+let lastDragX = 0;
+let dragDelta = 0;
+
+shelfEl.addEventListener('pointerdown', (e) => {
+  isDragging = true;
+  dragStartX = e.clientX;
+  lastDragX = e.clientX;
+  dragDelta = 0;
+  shelfEl.setPointerCapture(e.pointerId);
+});
+
+shelfEl.addEventListener('pointermove', (e) => {
+  if (!isDragging) return;
+  dragDelta = lastDragX - e.clientX;
+  lastDragX = e.clientX;
+  rowOffsets.forEach((_, rowIdx) => {
+    rowOffsets[rowIdx] += dragDelta * PARALLAX[rowIdx];
+    layoutRow(rowIdx);
+  });
+});
+
+shelfEl.addEventListener('pointerup', (e) => {
+  if (!isDragging) return;
+  isDragging = false;
+  // Pass drag velocity to auto-scroll
+  rowVelocity.forEach((_, i) => { rowVelocity[i] = dragDelta * 0.5; });
+});
+
+shelfEl.addEventListener('pointercancel', () => {
+  isDragging = false;
+});
+
 // ─── Navigation / Router ──────────────────────────────────
-const pages = ['home', 'publications', 'syllabi'];
+const pages = ['home', 'publications', 'syllabi', 'currently'];
 const overlays = {};
 const navItems = {};
 const titleBlock = document.getElementById('title-block');
@@ -108,6 +252,13 @@ function navigateTo(page) {
   } else {
     anim.setOpacity(0.15);
     titleBlock.style.opacity = '0';
+  }
+
+  // Start/stop shelf animation
+  if (page === 'currently') {
+    startShelf();
+  } else {
+    stopShelf();
   }
 
   // Push to hash without triggering the hashchange handler again

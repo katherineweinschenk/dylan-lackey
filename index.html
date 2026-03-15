@@ -40,6 +40,10 @@
           <span class="label nav-section">02</span>
           <span class="label nav-name">Syllabi</span>
         </div>
+        <div class="nav-item" data-page="currently">
+          <span class="label nav-section">03</span>
+          <span class="label nav-name">Currently</span>
+        </div>
       </div>
 
       <div class="title-block" id="title-block"></div>
@@ -83,6 +87,19 @@
       </div>
       <div class="publications-grid" id="publications-grid">
         <!-- Populated by JS -->
+      </div>
+    </div>
+
+    <!-- Currently page content overlay -->
+    <div class="page-overlay hidden" id="page-currently">
+      <div class="currently-info" id="currently-info">
+        <span class="currently-info-title" id="currently-info-title"></span>
+        <span class="currently-info-creator" id="currently-info-creator"></span>
+      </div>
+      <div class="currently-shelf" id="currently-shelf">
+        <div class="shelf-row" id="shelf-row-0"></div>
+        <div class="shelf-row" id="shelf-row-1"></div>
+        <div class="shelf-row" id="shelf-row-2"></div>
       </div>
     </div>
 
