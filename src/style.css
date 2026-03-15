@@ -391,6 +391,7 @@ body, html {
   margin-top: auto;
   padding-top: 12px;
   align-self: flex-end;
+  text-align: right;
 }
 
 /* ─── Syllabi Page ────────────────────────────────────── */
