@@ -1,7 +1,7 @@
 import { initAnimation } from './animation.js';
 import { publications } from './data/publications.js';
 import { courses } from './data/syllabi.js';
-import { currently } from './data/currently.js';
+import { shelf } from './data/shelf.js';
 
 // ─── Animation ────────────────────────────────────────────
 const anim = initAnimation(document.getElementById('webgl-container'));
@@ -81,8 +81,8 @@ courses.forEach((course) => {
 });
 
 // ─── Currently Shelf ──────────────────────────────────────
-const infoTitle = document.getElementById('currently-info-title');
-const infoCreator = document.getElementById('currently-info-creator');
+const infoTitle = document.getElementById('shelf-info-title');
+const infoCreator = document.getElementById('shelf-info-creator');
 
 const shelfRows = [
   document.getElementById('shelf-row-0'),
@@ -96,7 +96,7 @@ const AUTO_SPEED = 0.4;
 
 // Distribute cards round-robin across rows
 const rowItems = [[], [], []];
-currently.forEach((item, i) => rowItems[i % 3].push(item));
+shelf.forEach((item, i) => rowItems[i % 3].push(item));
 
 // Build card elements and track per-row state
 const rowCardEls = [[], [], []];
@@ -188,7 +188,7 @@ function stopShelf() {
 }
 
 // Drag interaction
-const shelfEl = document.getElementById('currently-shelf');
+const shelfEl = document.getElementById('shelf-carousel');
 let isDragging = false;
 let dragStartX = 0;
 let lastDragX = 0;
@@ -224,7 +224,7 @@ shelfEl.addEventListener('pointercancel', () => {
 });
 
 // ─── Navigation / Router ──────────────────────────────────
-const pages = ['home', 'publications', 'syllabi', 'currently'];
+const pages = ['home', 'publications', 'syllabi', 'shelf'];
 const overlays = {};
 const navItems = {};
 const titleBlock = document.getElementById('title-block');
@@ -255,7 +255,7 @@ function navigateTo(page) {
   }
 
   // Start/stop shelf animation
-  if (page === 'currently') {
+  if (page === 'shelf') {
     startShelf();
   } else {
     stopShelf();

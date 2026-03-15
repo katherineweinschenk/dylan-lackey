@@ -396,7 +396,7 @@ body, html {
 
 /* ─── Currently Page ─────────────────────────────────── */
 
-#page-currently {
+#page-shelf {
   background: rgba(240, 240, 240, 0.96);
   backdrop-filter: blur(2px);
   padding: 16px;
@@ -411,7 +411,7 @@ body, html {
   flex-direction: column;
 }
 
-.currently-info {
+.shelf-info {
   display: flex;
   align-items: baseline;
   gap: 20px;
@@ -421,7 +421,7 @@ body, html {
   min-height: 40px;
 }
 
-.currently-info-title {
+.shelf-info-title {
   font-family: var(--font-mono);
   font-size: 0.63rem;
   text-transform: uppercase;
@@ -429,7 +429,7 @@ body, html {
   color: var(--fg);
 }
 
-.currently-info-creator {
+.shelf-info-creator {
   font-family: var(--font-mono);
   font-size: 0.58rem;
   letter-spacing: 0.08em;
@@ -437,7 +437,7 @@ body, html {
   opacity: 0.5;
 }
 
-.currently-shelf {
+.shelf-carousel {
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
@@ -447,7 +447,7 @@ body, html {
   user-select: none;
 }
 
-.currently-shelf:active {
+.shelf-carousel:active {
   cursor: grabbing;
 }
 
@@ -698,7 +698,7 @@ body, html {
     padding: 8px;
   }
 
-  #page-currently {
+  #page-shelf {
     left: 64px;
     right: 64px;
     top: 64px;
@@ -706,33 +706,6 @@ body, html {
     width: auto;
     height: auto;
     padding: 8px;
-    overflow-y: auto;
-    display: block;
-  }
-
-  .currently-shelf {
-    height: auto;
-    cursor: default;
-    display: block;
-  }
-
-  .shelf-row {
-    position: relative;
-    height: 120px;
-    overflow-x: auto;
-    overflow-y: hidden;
-    white-space: nowrap;
-    border-bottom: 1px solid var(--ui-line);
-  }
-
-  .shelf-card {
-    position: relative;
-    display: inline-flex;
-    top: auto;
-    transform: none;
-    height: 100px;
-    margin: 10px 4px;
-    vertical-align: top;
   }
 
 }
