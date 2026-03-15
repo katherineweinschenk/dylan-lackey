@@ -492,6 +492,21 @@ body, html {
   display: block;
 }
 
+.syllabus-download-link {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .syllabus-embed iframe {
+    display: none;
+  }
+
+  .syllabus-download-link {
+    display: inline-flex;
+    margin: 24px 16px;
+  }
+}
+
 .syllabus-no-pdf {
   padding: 32px 24px;
   font-family: var(--font-mono);

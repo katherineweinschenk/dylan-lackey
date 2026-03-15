@@ -35,8 +35,11 @@ courses.forEach((course) => {
   const item = document.createElement('div');
   item.className = 'syllabus-item';
 
-  const embedPlaceholder = course.pdfPath
-    ? ''
+  const embedContent = course.pdfPath
+    ? `<a class="syllabus-download-link cv-link" href="${course.pdfPath}" download>
+        <span class="label">Download Syllabus</span>
+        <span class="cv-arrow">↓</span>
+       </a>`
     : `<div class="syllabus-no-pdf">PDF not yet available</div>`;
 
   item.innerHTML = `
@@ -48,7 +51,7 @@ courses.forEach((course) => {
       </div>
       <span class="syllabus-toggle">+</span>
     </div>
-    <div class="syllabus-embed">${embedPlaceholder}</div>
+    <div class="syllabus-embed">${embedContent}</div>
   `;
 
   const header = item.querySelector('.syllabus-header');
@@ -57,12 +60,14 @@ courses.forEach((course) => {
     const isOpen = item.classList.toggle('open');
     const embed = item.querySelector('.syllabus-embed');
     if (isOpen && course.pdfPath) {
-      // Lazy-load iframe on first open
+      // Lazy-load iframe on first open (desktop only — hidden via CSS on mobile)
       if (!iframeLoaded) {
-        embed.innerHTML = `<iframe src="${course.pdfPath}" title="${course.title} Syllabus"></iframe>`;
+        const iframe = document.createElement('iframe');
+        iframe.src = course.pdfPath;
+        iframe.title = `${course.title} Syllabus`;
+        embed.prepend(iframe);
         iframeLoaded = true;
       }
-      // Wait a frame so the iframe is in the DOM before measuring
       requestAnimationFrame(() => {
         embed.style.maxHeight = embed.scrollHeight + 'px';
       });
