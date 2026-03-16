@@ -53,153 +53,125 @@ export function initAnimation(container) {
   d2.position.set(-5, 0, 5);
   scene.add(d2);
 
-  // ─── Material Factory ───────────────────────────────────
-  function makeMaterial(color = 0xffffff) {
-    return new THREE.MeshPhysicalMaterial({
-      color,
-      metalness: 1.0,
-      roughness: 0.05,
-      envMap: envTex,
-      envMapIntensity: 2.2,
-      clearcoat: 1.0,
-      clearcoatRoughness: 0.0,
-    });
-  }
+  // ─── Material ───────────────────────────────────────────
+  const mat = new THREE.MeshPhysicalMaterial({
+    color: 0xffffff,
+    metalness: 1.0,
+    roughness: 0.05,
+    envMap: envTex,
+    envMapIntensity: 2.2,
+    clearcoat: 1.0,
+    clearcoatRoughness: 0.0,
+  });
 
-  // ─── Wavy Ribbon Ring Geometry ──────────────────────────
-  //
-  // Each ring follows a wavy, non-circular path (like a hand-
-  // drawn circle) and has a flat ribbon cross-section created
-  // by scaling the tube geometry along its local normal axis.
-  //
+  // ─── Trefoil Knot Tube ───────────────────────────────────
+  // Parametric trefoil curve:
+  //   x(t) = sin(t) + 2·sin(2t)
+  //   y(t) = cos(t) - 2·cos(2t)
+  //   z(t) = -sin(3t)
+  // t ∈ [0, 2π] closes seamlessly.
 
-  class WavyRingCurve extends THREE.Curve {
-    constructor(radius, wobbles, phase) {
-      super();
-      this.radius = radius;
-      this.wobbles = wobbles; // array of {amp, freq, phaseOffset}
-      this.phase = phase;
-    }
+  const CURVE_SEGS = 512;
+  const TUBE_SEGS  = 24;
+  const KNOT_R     = 1.1;   // overall scale
+  const TUBE_R     = 0.22;  // tube radius
 
-    getPoint(t, optionalTarget = new THREE.Vector3()) {
-      const angle = t * Math.PI * 2;
-      let r = this.radius;
-      let z = 0;
-      for (const w of this.wobbles) {
-        r += w.amp * Math.sin(w.freq * angle + this.phase + (w.phaseOffset || 0));
-        z += (w.zAmp || 0) * Math.sin(w.freq * angle + this.phase * 0.7 + (w.phaseOffset || 0));
-      }
-      return optionalTarget.set(
-        r * Math.cos(angle),
-        r * Math.sin(angle),
-        z
+  class TrefoilCurve extends THREE.Curve {
+    getPoint(t, out = new THREE.Vector3()) {
+      const a = t * Math.PI * 2;
+      return out.set(
+        KNOT_R * (Math.sin(a) + 2 * Math.sin(2 * a)),
+        KNOT_R * (Math.cos(a) - 2 * Math.cos(2 * a)),
+        KNOT_R * (-Math.sin(3 * a))
       );
     }
   }
 
-  const R = 2.0;
+  const knotCurve = new TrefoilCurve();
 
-  // Ring definitions: three main rings + one thinner fourth ring
-  const ringDefs = [
-    {
-      // Ring I (top in image)
-      wobbles: [
-        { amp: 0.22, freq: 3, phaseOffset: 0, zAmp: 0.08 },
-        { amp: 0.10, freq: 5, phaseOffset: 1.2, zAmp: 0.05 },
-      ],
-      phase: 0,
-      tubeRadius: 0.19,
-      flattenZ: 0.32,
-      color: 0xffffff,
-      rotation: [0, 0, 0], // XY plane
-    },
-    {
-      // Ring R (bottom-left in image)
-      wobbles: [
-        { amp: 0.18, freq: 4, phaseOffset: 0.5, zAmp: 0.10 },
-        { amp: 0.08, freq: 7, phaseOffset: 2.0, zAmp: 0.04 },
-      ],
-      phase: 2.1,
-      tubeRadius: 0.19,
-      flattenZ: 0.32,
-      color: 0xf5f0eb,
-      rotation: [Math.PI / 2, 0, 0], // XZ plane
-    },
-    {
-      // Ring S (bottom-right in image)
-      wobbles: [
-        { amp: 0.20, freq: 3, phaseOffset: 1.0, zAmp: 0.12 },
-        { amp: 0.12, freq: 6, phaseOffset: 3.5, zAmp: 0.06 },
-      ],
-      phase: 4.2,
-      tubeRadius: 0.19,
-      flattenZ: 0.32,
-      color: 0xebf0f5,
-      rotation: [0, Math.PI / 2, 0], // YZ plane
-    },
-    {
-      // The fourth ring – thinner than the others
-      wobbles: [
-        { amp: 0.15, freq: 5, phaseOffset: 0.8, zAmp: 0.06 },
-        { amp: 0.07, freq: 8, phaseOffset: 2.5, zAmp: 0.03 },
-      ],
-      phase: 1.0,
-      tubeRadius: 0.10,
-      flattenZ: 0.32,
-      color: 0xf0ebe5,
-      rotation: [Math.PI / 4, Math.PI / 4, 0], // diagonal plane
-    },
-  ];
+  // ─── Dynamic tube geometry ───────────────────────────────
+  // Rebuilt each frame so a travelling ripple can modulate the radius.
 
-  const rings = [];
-  const ringsGroup = new THREE.Group();
+  const vertCount = (CURVE_SEGS + 1) * (TUBE_SEGS + 1);
+  const posArr = new Float32Array(vertCount * 3);
+  const uvArr  = new Float32Array(vertCount * 2);
 
-  ringDefs.forEach((def) => {
-    const curve = new WavyRingCurve(R, def.wobbles, def.phase);
-    const geom = new THREE.TubeGeometry(curve, 256, def.tubeRadius, 20, true);
-    const mesh = new THREE.Mesh(geom, makeMaterial(def.color));
+  const idxArr = [];
+  for (let j = 0; j < TUBE_SEGS; j++) {
+    for (let i = 0; i < CURVE_SEGS; i++) {
+      const a =  j      * (CURVE_SEGS + 1) + i;
+      const b =  j      * (CURVE_SEGS + 1) + i + 1;
+      const c = (j + 1) * (CURVE_SEGS + 1) + i + 1;
+      const d = (j + 1) * (CURVE_SEGS + 1) + i;
+      idxArr.push(a, b, d,  b, c, d);
+    }
+  }
 
-    // Flatten the tube into a ribbon by squashing the local Z axis
-    mesh.scale.z = def.flattenZ;
+  for (let j = 0; j <= TUBE_SEGS; j++) {
+    for (let i = 0; i <= CURVE_SEGS; i++) {
+      const idx = j * (CURVE_SEGS + 1) + i;
+      uvArr[idx * 2]     = i / CURVE_SEGS;
+      uvArr[idx * 2 + 1] = j / TUBE_SEGS;
+    }
+  }
 
-    // Wrap in a group so orientation applies after flattening
-    const wrapper = new THREE.Group();
-    wrapper.add(mesh);
-    wrapper.rotation.set(def.rotation[0], def.rotation[1], def.rotation[2]);
+  const geometry = new THREE.BufferGeometry();
+  geometry.setIndex(idxArr);
+  geometry.setAttribute('position', new THREE.BufferAttribute(posArr, 3));
+  geometry.setAttribute('uv',       new THREE.BufferAttribute(uvArr,  2));
 
-    rings.push({ wrapper, mesh });
-    ringsGroup.add(wrapper);
-  });
+  const mesh = new THREE.Mesh(geometry, mat);
+  scene.add(mesh);
 
-  scene.add(ringsGroup);
+  // Precompute Frenet frames (closed = true so normals wrap)
+  const frames = knotCurve.computeFrenetFrames(CURVE_SEGS, true);
+
+  // ─── Surface Update ──────────────────────────────────────
+  function updateSurface(t) {
+    const pos = geometry.attributes.position.array;
+
+    for (let i = 0; i <= CURVE_SEGS; i++) {
+      const u  = i / CURVE_SEGS;
+      const pt = knotCurve.getPointAt(u);
+      const fi = Math.min(i, CURVE_SEGS - 1);
+      const normal   = frames.normals[fi];
+      const binormal = frames.binormals[fi];
+
+      // Slow travelling ripple
+      const r = TUBE_R * (1 + 0.10 * Math.sin(t * 1.6 + u * Math.PI * 6));
+
+      for (let j = 0; j <= TUBE_SEGS; j++) {
+        const theta = (j / TUBE_SEGS) * Math.PI * 2;
+        const idx   = j * (CURVE_SEGS + 1) + i;
+        const cos   = Math.cos(theta);
+        const sin   = Math.sin(theta);
+
+        pos[idx * 3]     = pt.x + r * (cos * normal.x + sin * binormal.x);
+        pos[idx * 3 + 1] = pt.y + r * (cos * normal.y + sin * binormal.y);
+        pos[idx * 3 + 2] = pt.z + r * (cos * normal.z + sin * binormal.z);
+      }
+    }
+
+    geometry.attributes.position.needsUpdate = true;
+    geometry.computeVertexNormals();
+  }
 
   // ─── Animation Loop ─────────────────────────────────────
   const clock = new THREE.Clock();
-
-  let animationId;
-  let targetOpacity = 1;
+  let targetOpacity  = 1;
   let currentOpacity = 1;
 
   function animate() {
-    animationId = requestAnimationFrame(animate);
+    requestAnimationFrame(animate);
     const t = clock.getElapsedTime();
 
-    // Per-ring spin (each ring rotates in its own plane)
-    rings[0].mesh.rotation.z = t * 0.18;
-    rings[1].mesh.rotation.z = t * 0.14;
-    rings[2].mesh.rotation.z = t * 0.22;
-    rings[3].mesh.rotation.z = t * 0.10;
+    updateSurface(t);
 
-    // Collective slow drift
-    ringsGroup.rotation.y  = t * 0.07;
-    ringsGroup.rotation.x  = Math.sin(t * 0.04) * 0.25;
-    ringsGroup.rotation.z  = Math.cos(t * 0.03) * 0.08;
+    // Slow orbit — tilt so the 3-fold symmetry reads clearly
+    mesh.rotation.x = 0.45 + Math.sin(t * 0.06) * 0.18;
+    mesh.rotation.z = t * 0.09;
+    mesh.rotation.y = Math.cos(t * 0.05) * 0.14;
 
-    // Subtle breathing scale
-    const breathe = 1 + Math.sin(t * 1.4) * 0.025;
-    ringsGroup.scale.setScalar(breathe);
-
-    // Smooth opacity transition when pages switch
     if (currentOpacity !== targetOpacity) {
       currentOpacity += (targetOpacity - currentOpacity) * 0.06;
       if (Math.abs(currentOpacity - targetOpacity) < 0.002) {
