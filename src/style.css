@@ -285,18 +285,28 @@ body, html {
   font-weight: 300;
 }
 
-.cv-link {
-  display: inline-flex;
-  align-items: center;
+.home-container {
+  display: grid;
   gap: 10px;
+}
+
+.home-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  width: 100%;
+  padding: 10px;
+  min-height: 40px;
+  margin-bottom: 3px;
+
   text-decoration: none;
   color: var(--fg);
   border: 1px solid var(--fg);
-  padding: 8px 16px;
-  transition: background 0.2s, color 0.2s;
 }
 
-.cv-link:hover {
+.home-link:hover {
   background: rgba(10, 10, 10, 0.04);
 }
 
