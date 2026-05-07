@@ -283,6 +283,7 @@ body, html {
   opacity: 0.8;
   margin-bottom: 20px;
   font-weight: 300;
+  text-align: justify;
 }
 
 .home-container {
@@ -317,15 +318,29 @@ body, html {
 /* ─── Publications Page ───────────────────────────────── */
 
 #page-publications {
-  background: rgba(240, 240, 240, 0.96);
-  backdrop-filter: blur(2px);
-  padding: 16px;
+  background: transparent;
+  backdrop-filter: none;
+  padding: 16px 80px 16px 16px;
   left: 64px;
-  right: 64px;
+  right: 0;
   top: 64px;
   bottom: 64px;
   width: auto;
   height: auto;
+}
+
+#page-publications::before,
+#page-syllabi::before {
+  content: '';
+  position: fixed;
+  left: 64px;
+  right: 64px;
+  top: 64px;
+  bottom: 64px;
+  z-index: -1;
+  background: rgba(240, 240, 240, 0.96);
+  backdrop-filter: blur(2px);
+  pointer-events: none;
 }
 
 .publications-header,
@@ -532,11 +547,11 @@ body, html {
 /* ─── Syllabi Page ────────────────────────────────────── */
 
 #page-syllabi {
-  background: rgba(240, 240, 240, 0.96);
-  backdrop-filter: blur(2px);
-  padding: 16px;
+  background: transparent;
+  backdrop-filter: none;
+  padding: 16px 80px 16px 16px;
   left: 64px;
-  right: 64px;
+  right: 0;
   top: 64px;
   bottom: 64px;
   width: auto;
@@ -657,12 +672,27 @@ body, html {
   #page-home {
     pointer-events: auto;
     overflow-y: auto;
+    background: transparent;
     left: 64px;
-    right: 64px;
+    right: 0;
     top: 64px;
     bottom: 64px;
     width: auto;
     height: auto;
+    padding: 8px 72px 8px 8px;
+  }
+
+  #page-home::before {
+    content: '';
+    position: fixed;
+    left: 64px;
+    right: 64px;
+    top: 64px;
+    bottom: 64px;
+    z-index: -1;
+    background: rgba(240, 240, 240, 0.96);
+    backdrop-filter: blur(2px);
+    pointer-events: none;
   }
 
   .home-content {
@@ -676,9 +706,9 @@ body, html {
     bottom: auto;
     left: auto;
     max-width: 100%;
-    margin-top: 50vh;
-    padding: 24px 12px 30px;
-    background: var(--bg);
+    margin-top: 0;
+    padding: 16px 8px 24px;
+    background: transparent;
   }
 
   .page-overlay {
@@ -700,12 +730,12 @@ body, html {
   #page-publications,
   #page-syllabi {
     left: 64px;
-    right: 64px;
+    right: 0;
     top: 64px;
     bottom: 64px;
     width: auto;
     height: auto;
-    padding: 8px;
+    padding: 8px 72px 8px 8px;
   }
 
   #page-shelf {

@@ -171,6 +171,7 @@ export function initAnimation(container) {
     mesh.rotation.x = 0.45 + Math.sin(t * 0.06) * 0.18;
     mesh.rotation.z = t * 0.09;
     mesh.rotation.y = Math.cos(t * 0.05) * 0.14;
+    mesh.position.x = 2;
 
     if (currentOpacity !== targetOpacity) {
       currentOpacity += (targetOpacity - currentOpacity) * 0.06;
